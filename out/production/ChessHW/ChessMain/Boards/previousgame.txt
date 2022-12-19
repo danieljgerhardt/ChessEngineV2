@@ -1,0 +1,9 @@
+bR bN bB bQ bK ee bN bR 
+bP bP bP ee ee wQ bP bP 
+ee ee ee bP ee ee ee ee 
+ee ee bB ee bP ee ee ee 
+ee ee wB ee wP ee ee ee 
+ee ee ee ee ee ee ee ee 
+wP wP wP wP ee wP wP wP 
+wR wN wB ee wK ee wN wR 
+false true true true true ENDED
