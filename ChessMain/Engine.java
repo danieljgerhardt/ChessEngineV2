@@ -7,8 +7,16 @@ public class Engine {
      private Board board;
      private Board testBoard;
 
+     private BMTree moveTree;
+
+     private final int DEPTH = 4;
+
+     //private Map<Integer, TreeSet<BMPair>> testMap;
+
      public Engine(Board b) {
+          //this.testMap = new TreeMap<>();
           this.board = b;
+          this.moveTree = new BMTree();
      }
 
      public Move generateMoveBlack(Move previousMove) {
@@ -81,7 +89,7 @@ public class Engine {
 
           double materialEval = board.getTotalPieceValue("w") - board.getTotalPieceValue("b");
           //pawns on the same column(pawn structure eval)
-          double pawnStructureEval = this.pawnStructureEval(board);
+          double pawnStructureEval = pawnStructureEval(board);
           //bishop pair
           double bishopPairEval = this.bishopPairEval(board);
           //centralized pieces
@@ -103,7 +111,7 @@ public class Engine {
           return (materialEval * .9) + (pawnStructureEval * .05) + (bishopPairEval * .05);
      }
 
-     public int pawnStructureEval(Board board) {
+     public static int pawnStructureEval(Board board) {
           int whitePawnsPerColumn;
           int blackPawnsPerColumn;
           int whiteBadColumns = 0;
@@ -132,12 +140,12 @@ public class Engine {
           return blackBadColumns - whiteBadColumns;
      }
 
-     public int pushedPawnsEval(Board board) {
+     public static int pushedPawnsEval(Board board) {
           //passed pawns(pawns that have no opposition from enemy pawns)
           //pawns closer to promotion
           return 0;
      }
-     public int bishopPairEval(Board board) {
+     public static int bishopPairEval(Board board) {
           int bishopDifferential = 0;
           int whiteBishops = 0;
           int whiteKnights = 0;
@@ -255,50 +263,52 @@ public class Engine {
           return toMake;
      }
 
-     public void generateMoveStreamlined(Move previousMove, String color) {
-          boolean castling = false;
-          boolean enPassant = false;
-          Piece empty = new Piece("e", "e", 0, 0);
-          Move generator = new Move(empty, empty, this.testBoard);
-          ArrayList<Piece> possibleStartingPieces = new ArrayList<>();
-          ArrayList<Move> candidateMoves = new ArrayList<>();
-          for (Tile[] tArray : this.board.getTileArray()) {
+     public Move generateMoveDriver(String c) {
+          this.moveTree.clear();
+          //add check for first move
+          this.moveTree.setRoot(new TreeNode<>(new BMPair(Game.getMostRecentMove(), this.board)));
+          //populate move tree
+          try {
+               generateMoveTree(this.moveTree.getRoot(), c);
+          } catch (Exception e) {
+
+
+          } finally {
+               //scan new move tree and return best move
+               return null;
+          }
+
+     }
+
+     public void generateMoveTree(TreeNode<BMPair> caller, String currColor) throws Exception {
+          Board currBoard = caller.getData().getBoard();
+          Move generator = new Move(new Piece(), new Piece(), currBoard);
+          ArrayList<Piece> startingPieces = new ArrayList<>();
+
+          //generate every possible move
+          for (Tile tArray[] : currBoard.getTileArray()) {
                for (Tile t : tArray) {
-                    if (t.getPiece().getColor().equals(color)) {
-                         possibleStartingPieces.add(t.getPiece());
+                    if (currColor.equals(t.getPiece().getColor())) {
+                         startingPieces.add(t.getPiece());
                          generator.generatePossibleMoves(t.getPiece());
                     }
                }
           }
-          ArrayList<Tile> possibleMovesPerPiece;
-          for (Piece piece : possibleStartingPieces) {
-               possibleMovesPerPiece = piece.getPossibleMoves();
-               for (int i = 0; i < possibleMovesPerPiece.size(); i++) {
-                    if (piece.isKing() && Math.abs((piece.getColumn() - possibleMovesPerPiece.get(i).getColumn())) == 2) {
-                         castling = true;
-                    }
-                    if (color.equals("w") && previousMove.getStartingPiece().isPawn() && previousMove.getStartingPiece().getColor().equals("b") && previousMove.getStartingPiece().getRow() == 5 && piece.isPawn()) { //this line is questionable
-                         //System.out.println("can en passant");
-                         enPassant = true;
-                    }
-                    if (color.equals("b") && previousMove.getStartingPiece().isPawn() && previousMove.getStartingPiece().getColor().equals("w") && previousMove.getStartingPiece().getRow() == 4 && piece.isPawn()) { //this line is questionable
-                         //System.out.println("can en passant");
-                         enPassant = true;
-                    }
-                    Move testMove = new Move(piece, possibleMovesPerPiece.get(i).getPiece(), this.board.getBoardCopy(), enPassant, previousMove.getEndingTile(), castling);
-                    if (testMove.makeMove()) {
-                         //System.out.println("possible player move " + (i + 1) + " " + testMove);
-                         candidateMoves.add(testMove);
-                         testMove.undoMove();
-                         castling = false;
-                         enPassant = false;
-                    }
+          for (Piece p : startingPieces) {
+               for (Move m : Piece.getListOfMoves(p, Game.getMostRecentMove(), currBoard)) {
+                    BMPair newBMPair = new BMPair(m, currBoard);
+                    TreeNode<BMPair> newNode = caller.addChild(newBMPair);
+                    generateMoveTree(newNode, Game.getOppositeColor(currColor));
                }
-               //System.out.println("---------------------");
           }
-          if (candidateMoves.size() < 1) {
-               this.prologue(previousMove, color.equals("w"));
+
+          //repeat this recursively until a specified depth
+          if (this.moveTree.getDepth() == DEPTH) {
+               //base case
+               throw new Exception("end");
           }
+          //as you travel recursively, chuck lines that have a bad eval
+
      }
 
 }

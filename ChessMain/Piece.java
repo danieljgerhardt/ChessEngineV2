@@ -12,6 +12,11 @@ public class Piece {
      private ArrayList<Tile> possibleMoves = new ArrayList<>();
      private boolean hasMoved;
 
+     public Piece() {
+          this.type = "e";
+          this.color = "e";
+     }
+
      public Piece(String type, String color, int row, int column) {
           this.type = type;
           this.color = color;
@@ -159,5 +164,37 @@ public class Piece {
 
      public boolean isKing() {
           return this.type.equals("K");
+     }
+
+     public static ArrayList<Move> getListOfMoves(Piece p, Move previousMove, Board b) {
+          ArrayList<Move> ret = new ArrayList<>();
+          boolean castling = false;
+          boolean enPassant = false;
+          ArrayList<Tile> possibleMovesPerPiece = p.getPossibleMoves();
+          for (int i = 0; i < possibleMovesPerPiece.size(); i++) {
+               if (p.isKing() && Math.abs((p.getColumn()
+                         - possibleMovesPerPiece.get(i).getColumn())) == 2) {
+                    castling = true;
+               }
+               if (previousMove != null && previousMove.getStartingPiece().isPawn()
+                         && previousMove.getStartingPiece().getColor().equals("b")
+                         && previousMove.getStartingPiece().getRow() == 5 && p.isPawn()) {
+                    enPassant = true;
+               }
+               if (previousMove != null && previousMove.getStartingPiece().isPawn() &&
+                         previousMove.getStartingPiece().getColor().equals("w")
+                         && previousMove.getStartingPiece().getRow() == 4 && p.isPawn()) {
+                    enPassant = true;
+               }
+               Move testMove = new Move(p, possibleMovesPerPiece.get(i).getPiece(),
+                         b, enPassant, previousMove.getEndingTile(), castling);
+               if (testMove.makeMove()) {
+                    ret.add(testMove);
+                    testMove.undoMove();
+               }
+               castling = false;
+               enPassant = false;
+          }
+          return ret;
      }
 }

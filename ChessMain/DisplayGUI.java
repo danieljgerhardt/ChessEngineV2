@@ -18,9 +18,7 @@ public class DisplayGUI extends JFrame implements ActionListener {
 
      private ArrayList<Move> moveList = new ArrayList<>();
 
-     //private JOptionPane colorSelect;
-
-     private JOptionPane instructionsPane = new JOptionPane("Welcome to my chess game!");
+     private JOptionPane colorSelect;
 
      private JOptionPane boardSelect;
      private JLabel winLabel = new JLabel();
@@ -30,7 +28,7 @@ public class DisplayGUI extends JFrame implements ActionListener {
      private JPanel losePanel = new JPanel();
      private JPanel drawPanel = new JPanel();
 
-     //private String colorChoice = "";
+     private String colorChoice = "";
      private Game game;
 
      private JFrame frame = new JFrame("Chess");
@@ -103,31 +101,16 @@ public class DisplayGUI extends JFrame implements ActionListener {
                     super.windowClosing(e);
                }
           });
-          /*while (!this.colorChoice.toLowerCase().equals("white") &&
+          while (!this.colorChoice.toLowerCase().equals("white") &&
           !this.colorChoice.toLowerCase().equals("black")) {
                 this.colorChoice =
                 JOptionPane.showInputDialog(null, "Which color would you like to play as? (White/Black)");
-          }*/
+          }
           this.game = readGame;
-          /*if (this.colorChoice.equals("black")) {
+          if (this.colorChoice.equals("black")) {
                this.game.executeComputerMove("w");
                this.addPieces();
-          }*/
-          this.instructionsPane.showMessageDialog(this.frame,
-                  "Welcome to my chess game! It is played like normal chess. Booting up this game displays\n" +
-                          "board options. These include a basic game, some custom boards, and loading a previous game.\n" +
-                          "To move a piece, click the starting piece then the ending square. Chess is a turn based\n" +
-                          "game that begins with white's move. Each piece has a unique move set they are limited to.\n" +
-                          "Pawns move once forward and capture diagonally, and can move twice on the first move\n" +
-                          "or do en passant. They convert to a queen if they reach the end of the board.\n" +
-                          "Rooks move horizontally and vertically. Knights move two squares in\n" +
-                          "one direction and one square in the perpendicular direction in an L shape. Bishops move\n" +
-                          "diagonally. Queens have the moves of rooks and bishops. Kings can move one square in any\n" +
-                          "direction, or castle if they and their corresponding rook haven't moved and are not castling\n" +
-                          "through check. The king moves two squares to the side and the rook moves to the inside of\n" +
-                          "the king. A piece move that attacks the enemy king is a check that must be dealt with.\n" +
-                          "Chess is won by an unavoidable attack(checkmate) on the enemy king or draw through\n" +
-                          "threefold repetition of a position or not enough material to checkmate.");
+          }
      }
 
 
@@ -169,7 +152,7 @@ public class DisplayGUI extends JFrame implements ActionListener {
                          piecesClicked.add(this.gameBoard.getTileArray()[i][j].getPiece());
                          try {
                               if (piecesClicked.size() > 1) {
-                                   /*if (this.colorChoice.equals("white")) {
+                                   if (this.colorChoice.equals("white")) {
                                         if (this.game.executePlayerMove(piecesClicked.get(piecesClicked.size() - 2),
                                          piecesClicked.get(piecesClicked.size() - 1))) {
                                              this.addPieces();
@@ -181,7 +164,7 @@ public class DisplayGUI extends JFrame implements ActionListener {
                                              this.addPieces();
                                              this.game.executeComputerMove("w");
                                         }
-                                   }*/
+                                   }
                                    this.game.getGameOverStatus();
                                    if (this.game.getWhiteToMove() == this.piecesClicked.get(piecesClicked.size() - 2).
                                            getColor().equals("w")) {

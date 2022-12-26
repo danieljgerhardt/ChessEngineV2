@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Game {
 
-     private ArrayList<Move> moveList = new ArrayList<>();
+     private static ArrayList<Move> activeMoveList = new ArrayList<>();
 
      private ArrayList<Board> boardList = new ArrayList<>();
 
@@ -23,7 +23,7 @@ public class Game {
      private Engine engine;
 
      public Game(ArrayList<Move> ml, Board b) {
-          this.moveList = ml;
+          this.activeMoveList = ml;
           this.gameBoard = b;
           this.whiteToMove = true;
           this.engine = new Engine(this.gameBoard);
@@ -47,11 +47,19 @@ public class Game {
      }
 
      public Game(ArrayList<Move> ml, Board b, boolean w) {
-          this.moveList = ml;
+          this.activeMoveList = ml;
           this.gameBoard = b;
           this.whiteToMove = w;
           this.engine = new Engine(this.gameBoard);
           //this.boardList.add(this.gameBoard);
+     }
+
+     public static String getOppositeColor(String currColor) {
+          if (currColor.equals("w")) {
+               return "b";
+          } else {
+               return "w";
+          }
      }
 
      //piece one and piece two are two most recent pieces in the DisplayGUI's ArrayList
@@ -69,8 +77,8 @@ public class Game {
                Move move;
                boolean castling = false;
                boolean enPassant = false;
-               if (this.moveList.size() > 1) {
-                    previousMove = this.moveList.get(this.moveList.size() - 1);
+               if (this.activeMoveList.size() > 1) {
+                    previousMove = this.activeMoveList.get(this.activeMoveList.size() - 1);
                }
                if ((whiteToMove && pieceOne.getColor().equals("w")) || (!whiteToMove
                        && pieceOne.getColor().equals("b"))) {
@@ -94,7 +102,7 @@ public class Game {
                                  castling);
                     }
                     if (move.makeMove()) {
-                         this.moveList.add(move);
+                         this.activeMoveList.add(move);
                          this.whiteToMove = !whiteToMove;
                          int eqLimit = 0;
                          //Maybe should add if white to move
@@ -118,16 +126,16 @@ public class Game {
      public boolean executeComputerMove(String color) {
           Move move = null;
           if (color.equals("b")) {
-               move = engine.generateMoveBlack(this.moveList.get(this.moveList.size() - 1));
+               move = engine.generateMoveBlack(this.activeMoveList.get(this.activeMoveList.size() - 1));
           } else if (color.equals("w")) {
-               if (moveList.size() < 1) {
+               if (activeMoveList.size() < 1) {
                     move = engine.generateFirstMoveWhite();
                } else {
-                    move = engine.generateMoveWhite(this.moveList.get(this.moveList.size() - 1));
+                    move = engine.generateMoveWhite(this.activeMoveList.get(this.activeMoveList.size() - 1));
                }
           }
           if (move.makeMove()) {
-               this.moveList.add(move);
+               this.activeMoveList.add(move);
                System.out.println(move.toString());
                this.whiteToMove = !whiteToMove;
                for (Board testRep : this.boardList) {
@@ -139,18 +147,18 @@ public class Game {
                return true;
            }
            System.out.println(move.getStartingPiece().getRow() + ", " + move.getStartingPiece().getColumn());
-           System.out.println("Engine attempted illegal move: " + move.toString());
+           System.out.println("Engine attempted illegal move: " + move);
            return false;
      }
 
      public void getGameOverStatus() {
           //checks for and draw by stalemate
-          if (moveList.size() < 1) {
+          if (activeMoveList.size() < 1) {
                this.engine.generateFirstMoveWhite();
           } else {
-               this.engine.checkMoveWhite(this.moveList.get(this.moveList.size() - 1));
+               this.engine.checkMoveWhite(this.activeMoveList.get(this.activeMoveList.size() - 1));
                //System.out.println("checking if black can move");
-               this.engine.checkMoveBlack(this.moveList.get(this.moveList.size() - 1));
+               this.engine.checkMoveBlack(this.activeMoveList.get(this.activeMoveList.size() - 1));
           }
           //checks for draw by repetition
           for (Board testRep : this.boardList) {
@@ -194,12 +202,19 @@ public class Game {
 
      public void undoMove() {
           //not currently used :(
-          Move toUndo = this.moveList.get(this.moveList.size() - 1);
+          Move toUndo = this.activeMoveList.get(this.activeMoveList.size() - 1);
           toUndo.undoMove();
      }
 
-     public ArrayList<Move> getMoveList() {
-          return this.moveList;
+     public static ArrayList<Move> getActiveMoveList() {
+          return activeMoveList;
+     }
+
+     public static Move getMostRecentMove() {
+          if (activeMoveList.size() < 1) {
+               return null;
+          }
+          return activeMoveList.get(activeMoveList.size() - 1);
      }
 
      public boolean getWhiteToMove() {
