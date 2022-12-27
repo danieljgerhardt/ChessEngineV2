@@ -156,13 +156,15 @@ public class DisplayGUI extends JFrame implements ActionListener {
                                         if (this.game.executePlayerMove(piecesClicked.get(piecesClicked.size() - 2),
                                          piecesClicked.get(piecesClicked.size() - 1))) {
                                              this.addPieces();
-                                             this.game.executeComputerMove("b");
+                                             //this.game.executeComputerMove("b");
+                                             this.game.newExecuteEngineMove("b");
                                         }
                                    } else {
                                         if (this.game.executePlayerMove(piecesClicked.get(piecesClicked.size() - 2),
                                         piecesClicked.get(piecesClicked.size() - 1))) {
                                              this.addPieces();
-                                             this.game.executeComputerMove("w");
+                                             //this.game.executeComputerMove("w");
+                                             this.game.newExecuteEngineMove("w");
                                         }
                                    }
                                    this.game.getGameOverStatus();

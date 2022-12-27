@@ -20,4 +20,5 @@ public class BMPair {
 		return this.board;
 	}
 
+	public Move getMove() { return this.move; }
 }

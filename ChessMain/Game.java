@@ -22,22 +22,6 @@ public class Game {
 
      private Engine engine;
 
-     public Game(ArrayList<Move> ml, Board b) {
-          this.activeMoveList = ml;
-          this.gameBoard = b;
-          this.whiteToMove = true;
-          this.engine = new Engine(this.gameBoard);
-          //this.boardList.add(this.gameBoard);
-     }
-
-     public Game(Board b) {
-          this.gameBoard = b;
-          this.whiteToMove = false;
-          //May need to change above if engine ever plays white
-          this.engine = new Engine(this.gameBoard);
-          //this.boardList.add(this.gameBoard);
-     }
-
      public Game(Board b, boolean w) {
           this.gameBoard = b;
           this.whiteToMove = w;
@@ -107,14 +91,14 @@ public class Game {
                          int eqLimit = 0;
                          //Maybe should add if white to move
                          //Check if the board has already been reached to check for draws
-                         for (Board testRep : this.boardList) {
+                         /*for (Board testRep : this.boardList) {
                               if (testRep.toString().equals(this.gameBoard.toString()) && eqLimit == 0) {
                                    eqLimit++;
                                    this.repetitionCount++;
                                    testRep.incrRepetitionCount();
                                    System.out.println("rep found");
                               }
-                         }
+                         }*/
                          this.boardList.add(this.gameBoard.getBoardCopy());
                          return true;
                     }
@@ -136,7 +120,7 @@ public class Game {
           }
           if (move.makeMove()) {
                this.activeMoveList.add(move);
-               System.out.println(move.toString());
+               System.out.println(move);
                this.whiteToMove = !whiteToMove;
                for (Board testRep : this.boardList) {
                     if (testRep.equals(this.gameBoard)) {
@@ -151,6 +135,13 @@ public class Game {
            return false;
      }
 
+     public void newExecuteEngineMove(String color) {
+          Move toMake = this.engine.generateMoveDriver(color);
+          toMake.makeMove();
+          this.activeMoveList.add(toMake);
+          this.whiteToMove = !whiteToMove;
+     }
+
      public void getGameOverStatus() {
           //checks for and draw by stalemate
           if (activeMoveList.size() < 1) {
@@ -161,11 +152,11 @@ public class Game {
                this.engine.checkMoveBlack(this.activeMoveList.get(this.activeMoveList.size() - 1));
           }
           //checks for draw by repetition
-          for (Board testRep : this.boardList) {
+          /*for (Board testRep : this.boardList) {
                if (testRep.getRepetitionCount() >= 3) {
                     throw new GameOverException("draw");
                }
-          }
+          }*/
           int pieceCount = 0;
           int bishopCount = 0;
           int knightCount = 0;

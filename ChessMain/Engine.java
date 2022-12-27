@@ -6,12 +6,8 @@ public class Engine {
 
      private Board board;
      private Board testBoard;
-
      private BMTree moveTree;
-
      private final int DEPTH = 4;
-
-     //private Map<Integer, TreeSet<BMPair>> testMap;
 
      public Engine(Board b) {
           //this.testMap = new TreeMap<>();
@@ -271,20 +267,22 @@ public class Engine {
           try {
                generateMoveTree(this.moveTree.getRoot(), c);
           } catch (Exception e) {
-
-
+               return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
           } finally {
                //scan new move tree and return best move
-               return null;
+               return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
           }
 
      }
 
      public void generateMoveTree(TreeNode<BMPair> caller, String currColor) throws Exception {
+          if (this.moveTree.getDepth() == DEPTH) {
+               //base case
+               throw new Exception("end");
+          }
           Board currBoard = caller.getData().getBoard();
           Move generator = new Move(new Piece(), new Piece(), currBoard);
           ArrayList<Piece> startingPieces = new ArrayList<>();
-
           //generate every possible move
           for (Tile tArray[] : currBoard.getTileArray()) {
                for (Tile t : tArray) {
@@ -301,13 +299,6 @@ public class Engine {
                     generateMoveTree(newNode, Game.getOppositeColor(currColor));
                }
           }
-
-          //repeat this recursively until a specified depth
-          if (this.moveTree.getDepth() == DEPTH) {
-               //base case
-               throw new Exception("end");
-          }
-          //as you travel recursively, chuck lines that have a bad eval
 
      }
 
