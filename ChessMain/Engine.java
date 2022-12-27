@@ -264,21 +264,15 @@ public class Engine {
           //add check for first move
           this.moveTree.setRoot(new TreeNode<>(new BMPair(Game.getMostRecentMove(), this.board)));
           //populate move tree
-          try {
-               generateMoveTree(this.moveTree.getRoot(), c);
-          } catch (Exception e) {
-               return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
-          } finally {
-               //scan new move tree and return best move
-               return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
-          }
-
+          generateMoveTree(this.moveTree.getRoot(), c);
+          //scan new move tree and return best move
+          return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
      }
 
-     public void generateMoveTree(TreeNode<BMPair> caller, String currColor) throws Exception {
-          if (this.moveTree.getDepth() == DEPTH) {
+     public void generateMoveTree(TreeNode<BMPair> caller, String currColor) {
+          if (caller.getDepth() == DEPTH) {
                //base case
-               throw new Exception("end");
+               return;
           }
           Board currBoard = caller.getData().getBoard();
           Move generator = new Move(new Piece(), new Piece(), currBoard);
@@ -289,17 +283,17 @@ public class Engine {
                     if (currColor.equals(t.getPiece().getColor())) {
                          startingPieces.add(t.getPiece());
                          generator.generatePossibleMoves(t.getPiece());
+                         for (Move m : Piece.getListOfMoves(t.getPiece(), Game.getMostRecentMove(), currBoard)) {
+                              BMPair newBMPair = new BMPair(m, currBoard);
+                              caller.addChild(newBMPair);
+                         }
                     }
                }
           }
-          for (Piece p : startingPieces) {
-               for (Move m : Piece.getListOfMoves(p, Game.getMostRecentMove(), currBoard)) {
-                    BMPair newBMPair = new BMPair(m, currBoard);
-                    TreeNode<BMPair> newNode = caller.addChild(newBMPair);
-                    generateMoveTree(newNode, Game.getOppositeColor(currColor));
-               }
+          //generate each move for each child
+          for (TreeNode<BMPair> child : caller.getChildren()) {  
+               generateMoveTree(child, Game.getOppositeColor(currColor));
           }
-
      }
 
 }

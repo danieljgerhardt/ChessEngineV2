@@ -1,5 +1,7 @@
 package ChessMain;
 
+import java.util.ArrayList;
+
 public class BMTree {
 
 	private TreeNode<BMPair> root;
@@ -35,4 +37,12 @@ public class BMTree {
 		this.root = null;
 	}
 
+	@Override
+	public String toString() {
+		String ret = this.root.toString();
+		for (TreeNode<BMPair> child : this.root.getChildren()) {
+			ret += "\n" + child.toString();
+		}
+		return ret;
+	}
 }
