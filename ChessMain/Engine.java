@@ -14,71 +14,14 @@ public class Engine {
           this.board = b;
           this.moveTree = new BMTree();
      }
-
-     public Move generateMoveBlack(Move previousMove) {
-          return this.generateMoveGeneral(previousMove, "b");
-     }
-
-     public Move generateMoveWhite(Move previousMove) {
-          return this.generateMoveGeneral(previousMove, "w");
-     }
-
      public void checkMoveBlack(Move previousMove) {
           //this.generateMoveStreamlined(previousMove, "b");
           this.generateMoveGeneral(previousMove, "b");
      }
-
      public void checkMoveWhite(Move previousMove) {
-
           //this.generateMoveStreamlined(previousMove, "w");
           this.generateMoveGeneral(previousMove, "w");
      }
-
-     public Move generateFirstMoveWhite() {
-          int candidateAmount = 0;
-          this.testBoard = this.board.getBoardCopy();
-          Piece empty = new Piece("e", "e", 0, 0);
-          Move generator = new Move(empty, empty, this.testBoard);
-          ArrayList<Piece> possibleStartingPieces = new ArrayList<>();
-          ArrayList<Move> candidateMoves = new ArrayList<>();
-          for (Tile[] tArray : this.board.getTileArray()) {
-               for (Tile t : tArray) {
-                    if (t.getPiece().getColor().equals("w")) {
-                         possibleStartingPieces.add(t.getPiece());
-                         generator.generatePossibleMoves(t.getPiece());
-                    }
-               }
-          }
-          ArrayList<Tile> possibleMovesPerPiece;
-          //these next two lines should be monitored when branching out the use case of this method
-          double currentEval = this.evaluatePosition(this.testBoard);
-          double bestEval = currentEval;
-          int bestIndex = 0;
-          for (Piece piece : possibleStartingPieces) {
-               possibleMovesPerPiece = piece.getPossibleMoves();
-               for (int i = 0; i < possibleMovesPerPiece.size(); i++) {
-                    this.testBoard = this.board.getBoardCopy();
-                    Move testMove = new Move(piece, possibleMovesPerPiece.get(i).getPiece(), this.testBoard);
-                    if (testMove.makeMove()) {
-                         currentEval = this.evaluatePosition(this.testBoard);
-                         candidateAmount++;
-                         candidateMoves.add(testMove);
-                         if (currentEval > bestEval) {
-                              bestIndex = candidateAmount - 1;
-                              bestEval = currentEval;
-                         }
-                         testMove.undoMove();
-                    }
-               }
-          }
-          if (candidateMoves.size() < 1) {
-               this.prologue(null, true);
-          }
-          //System.out.println("Selected Candidate Move " + (bestIndex + 1) + " ; Eval: " + bestEval);
-          return new Move(candidateMoves.get(bestIndex).getStartingPiece(),
-                  candidateMoves.get(bestIndex).getEndingTile().getPiece(), this.board);
-     }
-
      public static double evaluatePosition(Board board) {
           //Positive = better for white, negative = better for black
           //More extreme value = higher advantage
@@ -88,25 +31,26 @@ public class Engine {
           double pawnStructureEval = pawnStructureEval(board);
           //bishop pair
           double bishopPairEval = bishopPairEval(board);
-          //centralized pieces
-
-          //knights on the edge
-
+          //pushed and passed pawns
+          double pushedPawnsEval = pushedPawnsEval(board);
+          //optimally placed pieces
+          double optimalPiecesEval = optimalPiecesEval(board);
           //empty squares near a king(especially if the empty squares match that of an enemy bishop)
 
           //king in center in opening
 
           //avoid repeating moves
 
-          //ability to promote
-
           //Weighting evals
           //Material = 90%
-          //Pawn structure = 5%
-          //Having bishop pair = 5%
-          return (materialEval * .9) + (pawnStructureEval * .05) + (bishopPairEval * .05);
+          //Pushed Pawns = 2.5%
+          //Optimal Pieces = 2.5%
+          //Pawn structure = 2.5%
+          //Having bishop pair = 2.5%
+          return (materialEval * .9) + (optimalPiecesEval * .025) +
+                    (pushedPawnsEval * .025) + (pawnStructureEval * .025) +
+                    (bishopPairEval * .025);
      }
-
      public static int pawnStructureEval(Board board) {
           int whitePawnsPerColumn;
           int blackPawnsPerColumn;
@@ -135,10 +79,59 @@ public class Engine {
           }
           return blackBadColumns - whiteBadColumns;
      }
-     public static int pushedPawnsEval(Board board) {
+     public static double pushedPawnsEval(Board board) {
           //passed pawns(pawns that have no opposition from enemy pawns)
           //pawns closer to promotion
-          return 0;
+          double ret = 0;
+          Tile[][] tArray = board.getTileArray();
+          int numWhitePawns = 0;
+          int numBlackPawns = 0;
+          for (int j = 0; j < tArray[0].length; j++) {
+               for (int i = 0; i < tArray.length; i++) {
+                    Piece test = tArray[i][j].getPiece();
+                    if (test.isPawn()) {
+                         if (test.getColor().equals("w")) {
+                              numWhitePawns++;
+                              switch (test.getRow()) {
+                                   case 3:
+                                        ret += 0.4;
+                                        break;
+                                   case 5:
+                                        ret += 0.6;
+                                        break;
+                                   case 6:
+                                        ret += 3;
+                                        break;
+                                   default:
+                                        break;
+                              }
+                         } else {
+                              numBlackPawns++;
+                              switch (test.getRow()) {
+                                   case 4:
+                                        ret += 0.4;
+                                        break;
+                                   case 2:
+                                        ret += 0.6;
+                                        break;
+                                   case 0:
+                                        ret -= 3;
+                                        break;
+                                   default:
+                                        break;
+                              }
+                         }
+                    }
+               }
+               if (numWhitePawns == 1 && numWhitePawns > numBlackPawns) {
+                    ret++;
+               } else if (numBlackPawns == 1 && numBlackPawns > numWhitePawns) {
+                    ret--;
+               }
+               numWhitePawns = 0;
+               numBlackPawns = 0;
+          }
+          return ret;
      }
      public static int bishopPairEval(Board board) {
           int bishopDifferential = 0;
@@ -146,18 +139,19 @@ public class Engine {
           int whiteKnights = 0;
           int blackBishops = 0;
           int blackKnights = 0;
+          Tile[][] arr = board.getTileArray();
           for (int row = 0; row < 8; row++) {
                for (int column = 0; column < 8; column++) {
-                    if (board.getTileArray()[row][column].getPiece().getType().equals("B")) {
-                         if (board.getTileArray()[row][column].getPiece().getColor().equals("w")) {
+                    if (arr[row][column].getPiece().getType().equals("B")) {
+                         if (arr[row][column].getPiece().getColor().equals("w")) {
                               whiteBishops++;
-                         } else if (board.getTileArray()[row][column].getPiece().getColor().equals("b")) {
+                         } else if (arr[row][column].getPiece().getColor().equals("b")) {
                               blackBishops++;
                          }
-                    } else if (board.getTileArray()[row][column].getPiece().getType().equals("N")) {
-                         if (board.getTileArray()[row][column].getPiece().getColor().equals("w")) {
+                    } else if (arr[row][column].getPiece().getType().equals("N")) {
+                         if (arr[row][column].getPiece().getColor().equals("w")) {
                               whiteKnights++;
-                         } else if (board.getTileArray()[row][column].getPiece().getColor().equals("b")) {
+                         } else if (arr[row][column].getPiece().getColor().equals("b")) {
                               blackKnights++;
                          }
                     }
@@ -173,6 +167,49 @@ public class Engine {
           //2 = white has 2 bishops, black has none
           //-2 = black has 2 bishops, white has none
           return bishopDifferential;
+     }
+     public static double optimalPiecesEval(Board board) {
+          Tile[][] arr = board.getTileArray();
+          double ret = 0;
+          for (int row = 0; row < 8; row++) {
+               for (int column = 0; column < 8; column++) {
+                    Piece test = arr[row][column].getPiece();
+                    if (test.getType().equals("N") || test.getType().equals("Q")) {
+                         if (row == 3 || row == 4) {
+                              if (column == 3 || column == 4) {
+                                   if (test.getColor().equals("w")) {
+                                        ret++;
+                                   } else {
+                                        ret--;
+                                   }
+                              }
+                         }
+                         if (row == 2 || row == 5) {
+                              if (column == 2 || column == 5) {
+                                   if (test.getType().equals("N") || test.getType().equals("Q")) {
+                                        if (test.getColor().equals("w")) {
+                                             ret += 0.5;
+                                        } else {
+                                             ret -= 0.5;
+                                        }
+                                   }
+                              }
+                         }
+                         if (row == 0) {
+                              if (column == 0) {
+                                   if (test.getType().equals("N") || test.getType().equals("Q")) {
+                                        if (test.getColor().equals("w")) {
+                                             ret -= 1;
+                                        } else {
+                                             ret += 1;
+                                        }
+                                   }
+                              }
+                         }
+                    }
+               }
+          }
+          return ret;
      }
      public void prologue(Move previousMove, boolean whiteToMove) {
           System.out.println("ending game... ");

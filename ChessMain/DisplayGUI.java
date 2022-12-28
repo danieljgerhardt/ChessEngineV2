@@ -67,7 +67,7 @@ public class DisplayGUI extends JFrame implements ActionListener {
           }
           this.game = readGame;
           if (this.colorChoice.equals("black")) {
-               this.game.executeComputerMove("w");
+               this.game.executeFirstComputerMove();
                this.addPieces();
           }
      }
@@ -116,14 +116,14 @@ public class DisplayGUI extends JFrame implements ActionListener {
                                          piecesClicked.get(piecesClicked.size() - 1))) {
                                              this.addPieces();
                                              //this.game.executeComputerMove("b");
-                                             this.game.newExecuteEngineMove("b");
+                                             this.game.executeComputerMove("b");
                                         }
                                    } else {
                                         if (this.game.executePlayerMove(piecesClicked.get(piecesClicked.size() - 2),
                                         piecesClicked.get(piecesClicked.size() - 1))) {
                                              this.addPieces();
                                              //this.game.executeComputerMove("w");
-                                             this.game.newExecuteEngineMove("w");
+                                             this.game.executeComputerMove("w");
                                         }
                                    }
                                    this.game.getGameOverStatus();
@@ -173,11 +173,14 @@ public class DisplayGUI extends JFrame implements ActionListener {
           String[] boardOptions = {"basic", "previous game", "queens galore", "bishopless",  "bishops against knights",
                   "castle test", "pawn army", "test pawn capture"};
           String boardChoice = "";
-          String boardOptionDisplay = "Enter the name of the board to play.\n"
+          /*String boardOptionDisplay = "Enter the name of the board to play.\n"
                   + "1. Basic 2. Previous Game\n"
                   + "3. Queens Galore 4. Bishopless \n"
                   + "5. Bishops Against Knights 6. Castle Test\n"
-                  + "7. Pawn Army 8. Test Pawn Capture";
+                  + "7. Pawn Army 8. Test Pawn Capture";*/
+          String boardOptionDisplay = "Enter the name of the board to play.\n"
+                    + "1. Basic 2. Previous Game\n"
+                    + "3. Bishopless \n";
           boolean looped = false;
           while (true) {
                try {

@@ -91,13 +91,13 @@ public class Move {
      }
 
      public boolean makeMove() {
-          if (!neutralizeThreats("w")) {
+
+          if (!neutralizeThreats("w") || !neutralizeThreats("b")) {
                return false;
           }
-          if (!neutralizeThreats("b")) {
-               return false;
-          }
+
           this.generatePossibleMoves(this.startingPiece);
+
           if (this.startingPiece.getPossibleMoves().contains(this.endingTile)) {
                if (engagingEnPassant) {
                     this.makeEnPassantCapture();
@@ -105,13 +105,13 @@ public class Move {
                if (capableOfCastling) {
                     this.executeCastle();
                }
+
                //execute promotion
                this.checkPromotion();
                this.executeMove();
-               //check for pins
-               ArrayList<Tile> postMoveThreats;
-               postMoveThreats = this.detectKingThreats(this.startingPiece.getColor());
 
+               //check for pins
+               ArrayList<Tile> postMoveThreats = this.detectKingThreats(this.startingPiece.getColor());
                if (postMoveThreats != null && postMoveThreats.size() > 0) {
                     //System.out.println("POST MOVE THREAT " + postMoveThreats.get(0).toString());
                     this.undoMove();

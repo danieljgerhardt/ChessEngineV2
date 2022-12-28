@@ -24,9 +24,7 @@ public class Game {
      public Game(Board b, boolean w) {
           this.gameBoard = b;
           this.whiteToMove = w;
-          //May need to change above if engine ever plays white
           this.engine = new Engine(this.gameBoard);
-          //this.boardList.add(this.gameBoard);
      }
 
      public static String getOppositeColor(String currColor) {
@@ -55,8 +53,7 @@ public class Game {
                if (this.activeMoveList.size() > 1) {
                     previousMove = this.activeMoveList.get(this.activeMoveList.size() - 1);
                }
-               if ((whiteToMove && pieceOne.getColor().equals("w")) || (!whiteToMove
-                       && pieceOne.getColor().equals("b"))) {
+               if ((whiteToMove && pieceOne.getColor().equals("w")) || (!whiteToMove && pieceOne.getColor().equals("b"))) {
                     if (previousMove != null) {
                          //Next line checks if en passant is legal
                          //Final number on next line is 3 for white and 4 for black
@@ -98,50 +95,31 @@ public class Game {
           return false;
      }
 
-     public boolean executeComputerMove(String color) {
-          Move move = null;
-          if (color.equals("b")) {
-               move = engine.generateMoveBlack(this.activeMoveList.get(this.activeMoveList.size() - 1));
-          } else if (color.equals("w")) {
-               if (activeMoveList.size() < 1) {
-                    move = engine.generateFirstMoveWhite();
-               } else {
-                    move = engine.generateMoveWhite(this.activeMoveList.get(this.activeMoveList.size() - 1));
-               }
-          }
-          if (move.makeMove()) {
-               this.activeMoveList.add(move);
-               System.out.println(move);
-               this.whiteToMove = !whiteToMove;
-               for (Board testRep : this.boardList) {
-                    if (testRep.equals(this.gameBoard)) {
-                         this.repetitionCount++;
-                    }
-               }
-               this.boardList.add(this.gameBoard);
-               return true;
-           }
-           System.out.println(move.getStartingPiece().getRow() + ", " + move.getStartingPiece().getColumn());
-           System.out.println("Engine attempted illegal move: " + move);
-           return false;
+     public void executeFirstComputerMove() {
+          Piece start = this.gameBoard.getTileArray()[6][4].getPiece();
+          Piece end = this.gameBoard.getTileArray()[4][4].getPiece();
+          Move move = new Move(start, end, this.gameBoard);
+          move.executeMove();
+          this.activeMoveList.add(move);
+          this.whiteToMove = !this.whiteToMove;
      }
 
-     public void newExecuteEngineMove(String color) {
+     public void executeComputerMove(String color) {
           Move toMakePre = this.engine.generateMoveDriver(color);
           Move toMake = toMakePre.moveToBoard(this.gameBoard);
           toMake.makeMove();
           this.activeMoveList.add(toMake);
-          this.whiteToMove = !whiteToMove;
+          this.whiteToMove = !this.whiteToMove;
      }
 
      public void getGameOverStatus() {
           //checks for and draw by stalemate
-          if (activeMoveList.size() < 1) {
-               this.engine.generateFirstMoveWhite();
-          } else {
+          if (this.activeMoveList.size() > 0) {
                this.engine.checkMoveWhite(this.activeMoveList.get(this.activeMoveList.size() - 1));
                //System.out.println("checking if black can move");
                this.engine.checkMoveBlack(this.activeMoveList.get(this.activeMoveList.size() - 1));
+          } else {
+               return;
           }
           //checks for draw by repetition
           /*for (Board testRep : this.boardList) {
@@ -181,16 +159,6 @@ public class Game {
                     throw new GameOverException("draw");
                }
           }
-     }
-
-     public void undoMove() {
-          //not currently used :(
-          Move toUndo = this.activeMoveList.get(this.activeMoveList.size() - 1);
-          toUndo.undoMove();
-     }
-
-     public static ArrayList<Move> getActiveMoveList() {
-          return activeMoveList;
      }
 
      public static Move getMostRecentMove() {

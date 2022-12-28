@@ -42,10 +42,10 @@ public class BMTree {
 	}
 
 	public TreeNode<BMPair> executeMiniMax() {
-		return this.minimax(this.root);
+		return this.minimax(this.root, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 	}
 
-	private TreeNode<BMPair> minimax(TreeNode<BMPair> caller) {
+	private TreeNode<BMPair> minimax(TreeNode<BMPair> caller, double alpha, double beta) {
 		if (caller.getDepth() == Engine.DEPTH) {
 			return caller;
 		}
@@ -56,8 +56,12 @@ public class BMTree {
 			value = Double.NEGATIVE_INFINITY;
 			for (TreeNode<BMPair> child : caller.getChildren()) {
 				index++;
-				double compare = minimax(child).getData().getEval();
+				double compare = minimax(child, alpha, beta).getData().getEval();
 				value = Math.max(value, compare);
+				alpha = Math.max(alpha, value);
+				if (beta <= alpha) {
+					break;
+				}
 				if (value == compare) {
 					finalIndex = index;
 				}
@@ -67,8 +71,12 @@ public class BMTree {
 			value = Double.POSITIVE_INFINITY;
 			for (TreeNode<BMPair> child : caller.getChildren()) {
 				index++;
-				double compare = minimax(child).getData().getEval();
+				double compare = minimax(child, alpha, beta).getData().getEval();
 				value = Math.min(value, compare);
+				beta = Math.min(beta, value);
+				if (beta <= alpha) {
+					break;
+				}
 				if (value == compare) {
 					finalIndex = index;
 				}
