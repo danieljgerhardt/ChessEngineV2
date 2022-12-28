@@ -7,7 +7,7 @@ public class Engine {
      private Board board;
      private Board testBoard;
      private BMTree moveTree;
-     private final int DEPTH = 4;
+     public static final int DEPTH = 3;
 
      public Engine(Board b) {
           //this.testMap = new TreeMap<>();
@@ -79,7 +79,7 @@ public class Engine {
                   candidateMoves.get(bestIndex).getEndingTile().getPiece(), this.board);
      }
 
-     public double evaluatePosition(Board board) {
+     public static double evaluatePosition(Board board) {
           //Positive = better for white, negative = better for black
           //More extreme value = higher advantage
 
@@ -87,7 +87,7 @@ public class Engine {
           //pawns on the same column(pawn structure eval)
           double pawnStructureEval = pawnStructureEval(board);
           //bishop pair
-          double bishopPairEval = this.bishopPairEval(board);
+          double bishopPairEval = bishopPairEval(board);
           //centralized pieces
 
           //knights on the edge
@@ -135,7 +135,6 @@ public class Engine {
           }
           return blackBadColumns - whiteBadColumns;
      }
-
      public static int pushedPawnsEval(Board board) {
           //passed pawns(pawns that have no opposition from enemy pawns)
           //pawns closer to promotion
@@ -262,11 +261,16 @@ public class Engine {
      public Move generateMoveDriver(String c) {
           this.moveTree.clear();
           //add check for first move
-          this.moveTree.setRoot(new TreeNode<>(new BMPair(Game.getMostRecentMove(), this.board)));
+          TreeNode<BMPair> newRoot = new TreeNode<>(new BMPair(Game.getMostRecentMove(), this.board));
+          this.moveTree.setRoot(newRoot);
+          newRoot.setIsRoot();
           //populate move tree
           generateMoveTree(this.moveTree.getRoot(), c);
           //scan new move tree and return best move
-          return this.moveTree.getRoot().getChildren().get(0).getData().getMove();
+          /*BMPair ret = this.moveTree.executeMiniMax().getData();
+          System.out.println(ret);
+          return ret.getMove();*/
+          return this.moveTree.executeMiniMax().getData().getMove();
      }
 
      public void generateMoveTree(TreeNode<BMPair> caller, String currColor) {
@@ -283,8 +287,19 @@ public class Engine {
                     if (currColor.equals(t.getPiece().getColor())) {
                          startingPieces.add(t.getPiece());
                          generator.generatePossibleMoves(t.getPiece());
-                         for (Move m : Piece.getListOfMoves(t.getPiece(), Game.getMostRecentMove(), currBoard)) {
-                              BMPair newBMPair = new BMPair(m, currBoard);
+                         Board forLoopBoard = currBoard.getBoardCopy();
+                         for (Move m : Piece.getListOfMoves(t.getPiece(), Game.getMostRecentMove(), forLoopBoard)) {
+                              m.makeMove();
+                              BMPair newBMPair = new BMPair(m, forLoopBoard.getBoardCopy());
+                              m.undoMove();
+                              forLoopBoard = currBoard.getBoardCopy();
+                              /*if (caller.hasChildren()) {
+                                   if (Math.abs(newBMPair.getEval()) - Math.abs(caller.bestChildrenEval(Game.getOppositeColor(currColor)).getData().getEval()) > 0) {
+                                        caller.addChild(newBMPair);
+                                   }
+                              } else {
+                                   caller.addChild(newBMPair);
+                              }*/
                               caller.addChild(newBMPair);
                          }
                     }
@@ -295,5 +310,4 @@ public class Engine {
                generateMoveTree(child, Game.getOppositeColor(currColor));
           }
      }
-
 }

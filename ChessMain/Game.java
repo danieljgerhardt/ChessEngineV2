@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class Game {
 
      private static ArrayList<Move> activeMoveList = new ArrayList<>();
-
      private ArrayList<Board> boardList = new ArrayList<>();
 
      private int repetitionCount = 0;
@@ -26,14 +25,6 @@ public class Game {
           this.gameBoard = b;
           this.whiteToMove = w;
           //May need to change above if engine ever plays white
-          this.engine = new Engine(this.gameBoard);
-          //this.boardList.add(this.gameBoard);
-     }
-
-     public Game(ArrayList<Move> ml, Board b, boolean w) {
-          this.activeMoveList = ml;
-          this.gameBoard = b;
-          this.whiteToMove = w;
           this.engine = new Engine(this.gameBoard);
           //this.boardList.add(this.gameBoard);
      }
@@ -136,7 +127,8 @@ public class Game {
      }
 
      public void newExecuteEngineMove(String color) {
-          Move toMake = this.engine.generateMoveDriver(color);
+          Move toMakePre = this.engine.generateMoveDriver(color);
+          Move toMake = toMakePre.moveToBoard(this.gameBoard);
           toMake.makeMove();
           this.activeMoveList.add(toMake);
           this.whiteToMove = !whiteToMove;

@@ -64,9 +64,6 @@ public class Board {
           }
           this.pieces = pieces;
      }
-     public Board(Tile[][] tileArrayForConstructor) {
-          this.tileArray = tileArrayForConstructor;
-     }
 
      public void arrangePiecesWhite() {
           for (int row = 0; row < BOARD_SIZE; row++) {

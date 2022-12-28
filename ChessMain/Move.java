@@ -30,26 +30,6 @@ public class Move {
           this.endingTile = this.board.getTileArray()[this.endingPiece.getRow()][this.endingPiece.getColumn()];
      }
 
-     public Move(Piece start, Piece end, Board board, boolean enPassantAbility, Tile enPassantTile) {
-          this.startingPiece = start;
-          this.endingPiece = end;
-          this.board = board;
-          this.startingTile = this.board.getTileArray()[this.startingPiece.getRow()][this.startingPiece.getColumn()];
-          this.endingTile = this.board.getTileArray()[this.endingPiece.getRow()][this.endingPiece.getColumn()];
-          this.canEnPassant = enPassantAbility;
-          this.enPassantTile = enPassantTile;
-          //Make engagingEnPassant true if this move is en passant
-          if (this.startingPiece.getColor().equals("w")) {
-               if (this.startingPiece.isPawn() && this.endingTile.getRow() + 1 == this.startingPiece.getRow()) {
-                    this.engagingEnPassant = true;
-               }
-          } else {
-               if (this.startingPiece.isPawn() && this.endingTile.getRow() - 1 == this.startingPiece.getRow()) {
-                    this.engagingEnPassant = true;
-               }
-          }
-     }
-
      public Move(Piece start, Piece end, Board board, boolean castle) {
           this.startingPiece = start;
           this.endingPiece = end;
@@ -100,6 +80,14 @@ public class Move {
                }
           }
           this.capableOfCastling = castle;
+     }
+
+     public Move moveToBoard(Board target) {
+          Piece newStart = target.getTileArray()[this.startingTile.getRow()][this.startingTile.getColumn()].getPiece();
+          Piece newEnd = target.getTileArray()[this.endingTile.getRow()][this.endingTile.getColumn()].getPiece();
+          Tile newEnPassantTile = target.getTileArray()[this.enPassantTile.getRow()][this.enPassantTile.getColumn()];
+          Move ret = new Move(newStart, newEnd, target, this.canEnPassant, newEnPassantTile, this.capableOfCastling);
+          return ret;
      }
 
      public boolean makeMove() {
@@ -445,9 +433,11 @@ public class Move {
                                         if (this.detectThreatsToTile("w", this.board.getTileArray()[7][2]) == null
                                                 && this.detectThreatsToTile("w", this.board.getTileArray()[7][3])
                                                 == null) {
-                                             //we can castle
-                                             piece.addToPossibleMoves(board.getTileArray()
-                                                     [this.startingPiece.getRow()][this.startingPiece.getColumn() - 2]);
+                                             if (this.startingPiece.getColumn() - 2 > 0) {
+                                                  //we can castle
+                                                  piece.addToPossibleMoves(board.getTileArray()
+                                                            [this.startingPiece.getRow()][this.startingPiece.getColumn() - 2]);
+                                             }
                                         }
                                    }
                               }
@@ -469,9 +459,11 @@ public class Move {
                                         if (this.detectThreatsToTile("w", this.board.getTileArray()[7][5]) == null
                                                 && this.detectThreatsToTile("w", this.board.getTileArray()[7][6])
                                                 == null) {
-                                             //we can castle
-                                             piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
-                                                     [this.startingPiece.getColumn() + 2]);
+                                             if (this.startingPiece.getColumn() + 2 < 8) {
+                                                  //we can castle
+                                                  piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
+                                                            [this.startingPiece.getColumn() + 2]);
+                                             }
                                         }
                                    }
                               }
@@ -498,9 +490,11 @@ public class Move {
                                         if (this.detectThreatsToTile("b", this.board.getTileArray()[0][2]) == null
                                                 && this.detectThreatsToTile("b", this.board.getTileArray()[0][3])
                                                 == null) {
-                                             //we can castle
-                                             piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
-                                                     [this.startingPiece.getColumn() - 2]);
+                                             if (this.startingPiece.getColumn() - 2 < 0) {
+                                                  //we can castle
+                                                  piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
+                                                            [this.startingPiece.getColumn() - 2]);
+                                             }
                                         }
                                    }
                               }
@@ -523,8 +517,10 @@ public class Move {
                                                 && this.detectThreatsToTile("b", this.board.getTileArray()[0][6])
                                                 == null) {
                                              //we can castle
-                                             piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
-                                                     [this.startingPiece.getColumn() + 2]);
+                                             if (this.startingPiece.getColumn() + 2 < 8) {
+                                                  piece.addToPossibleMoves(board.getTileArray()[this.startingPiece.getRow()]
+                                                            [this.startingPiece.getColumn() + 2]);
+                                             }
                                         }
                                    }
                               }

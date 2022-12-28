@@ -1,5 +1,7 @@
 package ChessMain;
 
+import com.sun.source.tree.Tree;
+
 import java.util.ArrayList;
 
 public class BMTree {
@@ -11,6 +13,8 @@ public class BMTree {
 	public BMTree() {
 
 	}
+
+	private ArrayList<TreeNode<BMPair>> allNodes = new ArrayList<>();
 
 	public void setRoot(TreeNode<BMPair> newRoot) {
 		this.root = newRoot;
@@ -35,6 +39,42 @@ public class BMTree {
 
 	public void clear() {
 		this.root = null;
+	}
+
+	public TreeNode<BMPair> executeMiniMax() {
+		return this.minimax(this.root);
+	}
+
+	private TreeNode<BMPair> minimax(TreeNode<BMPair> caller) {
+		if (caller.getDepth() == Engine.DEPTH) {
+			return caller;
+		}
+		double value;
+		int index = -1, finalIndex = 0;
+		if (!caller.isWhiteNode()) {
+			//maximizer
+			value = Double.NEGATIVE_INFINITY;
+			for (TreeNode<BMPair> child : caller.getChildren()) {
+				index++;
+				double compare = minimax(child).getData().getEval();
+				value = Math.max(value, compare);
+				if (value == compare) {
+					finalIndex = index;
+				}
+			}
+		} else {
+			//minimizer
+			value = Double.POSITIVE_INFINITY;
+			for (TreeNode<BMPair> child : caller.getChildren()) {
+				index++;
+				double compare = minimax(child).getData().getEval();
+				value = Math.min(value, compare);
+				if (value == compare) {
+					finalIndex = index;
+				}
+			}
+		}
+		return caller.getChildren().get(finalIndex);
 	}
 
 	@Override

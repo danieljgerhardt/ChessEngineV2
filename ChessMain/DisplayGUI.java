@@ -9,38 +9,20 @@ import java.util.Arrays;
 public class DisplayGUI extends JFrame implements ActionListener {
 
      private Board gameBoard;
-
      private JButton[][] tileButtons = new JButton[8][8];
-
-     private JPanel buttonPanel;
-
      private ArrayList<Piece> piecesClicked = new ArrayList<>();
-
      private ArrayList<Move> moveList = new ArrayList<>();
-
-     private JOptionPane colorSelect;
-
-     private JOptionPane boardSelect;
-     private JLabel winLabel = new JLabel();
-     private JLabel loseLabel = new JLabel();
-     private JLabel drawLabel = new JLabel();
-     private JPanel winPanel = new JPanel();
-     private JPanel losePanel = new JPanel();
-     private JPanel drawPanel = new JPanel();
-
+     private JLabel winLabel = new JLabel(), loseLabel = new JLabel(), drawLabel = new JLabel();
+     private JPanel winPanel = new JPanel(), losePanel = new JPanel(), drawPanel = new JPanel(), buttonPanel;
      private String colorChoice = "";
      private Game game;
-
      private JFrame frame = new JFrame("Chess");
      private JFrame winFrame = new JFrame("White wins!");
      private JFrame loseFrame = new JFrame("Black wins!");
      private JFrame drawFrame = new JFrame("The game is a draw!");
-
      private Color lightColor = new Color(238, 238, 210);
      private Color darkColor = new Color(118, 150, 86);
-
      private boolean gameEndedForWriting = false;
-
 
      public DisplayGUI(Game readGame) {
           gameBoard = readGame.getBoard();
@@ -73,36 +55,13 @@ public class DisplayGUI extends JFrame implements ActionListener {
           this.addPieces();
 
           frame.add(buttonPanel);
-          frame.addWindowListener(new WindowAdapter() {
-               @Override
-               public void windowClosing(WindowEvent e) {
-                    print("ChessMain/Boards/previousgame.txt");
-                    super.windowClosing(e);
-               }
-          });
-          winFrame.addWindowListener(new WindowAdapter() {
-               @Override
-               public void windowClosing(WindowEvent e) {
-                    print("ChessMain/Boards/previousgame.txt");
-                    super.windowClosing(e);
-               }
-          });
-          loseFrame.addWindowListener(new WindowAdapter() {
-               @Override
-               public void windowClosing(WindowEvent e) {
-                    print("ChessMain/Boards/previousgame.txt");
-                    super.windowClosing(e);
-               }
-          });
-          drawFrame.addWindowListener(new WindowAdapter() {
-               @Override
-               public void windowClosing(WindowEvent e) {
-                    print("ChessMain/Boards/previousgame.txt");
-                    super.windowClosing(e);
-               }
-          });
-          while (!this.colorChoice.toLowerCase().equals("white") &&
-          !this.colorChoice.toLowerCase().equals("black")) {
+          this.addWriteWhenClose(frame);
+          this.addWriteWhenClose(winFrame);
+          this.addWriteWhenClose(drawFrame);
+          this.addWriteWhenClose(loseFrame);
+
+          while (!this.colorChoice.equalsIgnoreCase("white") &&
+          !this.colorChoice.equalsIgnoreCase("black")) {
                 this.colorChoice =
                 JOptionPane.showInputDialog(null, "Which color would you like to play as? (White/Black)");
           }
@@ -212,13 +171,13 @@ public class DisplayGUI extends JFrame implements ActionListener {
 
      public static void main(String[] args) {
           String[] boardOptions = {"basic", "previous game", "queens galore", "bishopless",  "bishops against knights",
-                  "castle test", "pawn army"};
+                  "castle test", "pawn army", "test pawn capture"};
           String boardChoice = "";
           String boardOptionDisplay = "Enter the name of the board to play.\n"
                   + "1. Basic 2. Previous Game\n"
                   + "3. Queens Galore 4. Bishopless \n"
                   + "5. Bishops Against Knights 6. Castle Test\n"
-                  + "7. Pawn Army";
+                  + "7. Pawn Army 8. Test Pawn Capture";
           boolean looped = false;
           while (true) {
                try {
@@ -278,6 +237,16 @@ public class DisplayGUI extends JFrame implements ActionListener {
           boolean whiteToMove = this.game.getWhiteToMove();
           ChessIO.printFile(this.gameBoard, whiteToMove, canCastleWhiteKingside, canCastleWhiteQueenside,
                   canCastleBlackKingside, canCastleBlackQueenside, this.gameEndedForWriting, filePath);
+     }
+
+     public void addWriteWhenClose(JFrame f) {
+          f.addWindowListener(new WindowAdapter() {
+               @Override
+               public void windowClosing(WindowEvent e) {
+                    print("ChessMain/Boards/previousgame.txt");
+                    super.windowClosing(e);
+               }
+          });
      }
 
 }

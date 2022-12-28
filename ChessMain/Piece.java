@@ -92,6 +92,10 @@ public class Piece {
          this.type = newType;
      }
 
+     public void setColor(String e) {
+          this.color = "e";
+     }
+
      public void setHasMoved(Boolean moved) {
          this.hasMoved = moved;
      }
@@ -170,10 +174,10 @@ public class Piece {
           ArrayList<Move> ret = new ArrayList<>();
           boolean castling = false;
           boolean enPassant = false;
-          ArrayList<Tile> possibleMovesPerPiece = p.getPossibleMoves();
-          for (int i = 0; i < possibleMovesPerPiece.size(); i++) {
+          ArrayList<Tile> possibleMoves = p.getPossibleMoves();
+          for (int i = 0; i < possibleMoves.size(); i++) {
                if (p.isKing() && Math.abs((p.getColumn()
-                         - possibleMovesPerPiece.get(i).getColumn())) == 2) {
+                         - possibleMoves.get(i).getColumn())) == 2) {
                     castling = true;
                }
                if (previousMove != null && previousMove.getStartingPiece().isPawn()
@@ -186,7 +190,7 @@ public class Piece {
                          && previousMove.getStartingPiece().getRow() == 4 && p.isPawn()) {
                     enPassant = true;
                }
-               Move testMove = new Move(p, possibleMovesPerPiece.get(i).getPiece(),
+               Move testMove = new Move(p, possibleMoves.get(i).getPiece(),
                          b, enPassant, previousMove.getEndingTile(), castling);
                if (testMove.makeMove()) {
                     ret.add(testMove);

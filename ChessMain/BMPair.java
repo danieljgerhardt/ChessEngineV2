@@ -21,4 +21,9 @@ public class BMPair {
 	}
 
 	public Move getMove() { return this.move; }
+
+	@Override
+	public String toString() {
+		return this.board.toString() + "\n" + this.move.toString() + "\n\n";
+	}
 }
