@@ -19,17 +19,6 @@ public class Board {
           {"wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"}
      };
 
-     /*private String[][] pieces = {
-          {"ee", "ee", "ee", "bQ", "bK", "ee", "ee", "bR"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "ee", "ee", "ee", "ee"},
-          {"ee", "ee", "ee", "ee", "wK", "ee", "ee", "ee"}
-     };*/
-
      public Board() {
           this.tileArray = new Tile[BOARD_SIZE][BOARD_SIZE];
           this.repetitionCount = 1;

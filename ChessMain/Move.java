@@ -22,6 +22,8 @@ public class Move {
      private boolean engagingEnPassant = false;
      private boolean capableOfCastling = false;
 
+     private boolean isACastleExecution = false;
+
      public Move(Piece start, Piece end, Board board) {
           this.startingPiece = start;
           this.endingPiece = end;
@@ -202,6 +204,7 @@ public class Move {
                blackRook.setHasMoved(true);
                this.startingPiece.incrementMoveCount();
           }
+          this.isACastleExecution = true;
      }
 
      public void makeEnPassantCapture() {
@@ -815,6 +818,10 @@ public class Move {
 
      public static void writtenCantCastleBlackQueenside() {
           writtenCastleAbilityBlackQueenside = false;
+     }
+
+     public boolean getIsACastleExecution() {
+          return this.isACastleExecution;
      }
 
 }

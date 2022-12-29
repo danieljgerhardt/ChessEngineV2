@@ -1,9 +1,9 @@
-bR bN bB bQ bK bB bN bR 
-bP bP bP bP bP bP bP bP 
+ee bN ee wN ee bK ee bR 
+ee wB ee ee ee ee ee ee 
+wP ee ee ee ee bN ee ee 
 ee ee ee ee ee ee ee ee 
+ee wP ee ee ee ee ee ee 
 ee ee ee ee ee ee ee ee 
-ee ee ee ee ee ee ee ee 
-ee ee ee ee ee ee ee ee 
-wP wP wP wP wP wP wP wP 
-wR wN wB wQ wK wB wN wR 
-true true true true true
+ee ee ee ee ee ee wP wP 
+ee wR ee wR ee ee wK ee 
+false true true true true

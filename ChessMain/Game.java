@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Game {
 
-     private static ArrayList<Move> activeMoveList = new ArrayList<>();
+     public static ArrayList<Move> activeMoveList = new ArrayList<>();
      private ArrayList<Board> boardList = new ArrayList<>();
 
      private int repetitionCount = 0;

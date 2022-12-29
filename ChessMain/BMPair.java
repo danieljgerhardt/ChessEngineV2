@@ -9,7 +9,7 @@ public class BMPair {
 	public BMPair(Move m, Board b) {
 		this.move = m;
 		this.board = b;
-		this.eval = Engine.evaluatePosition(this.board);
+		this.eval = Eval.evaluatePosition(this.board);
 	}
 
 	public double getEval() {
