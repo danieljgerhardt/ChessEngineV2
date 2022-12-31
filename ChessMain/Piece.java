@@ -28,10 +28,7 @@ public class Piece {
                case "P":
                     this.value = 1;
                     break;
-               case "N":
-                    this.value = 3;
-                    break;
-               case "B":
+               case "N", "B":
                     this.value = 3;
                     break;
                case "R":
@@ -41,7 +38,7 @@ public class Piece {
                     this.value = 9;
                     break;
                case "K":
-                    this.value = 150;
+                    this.value = 900;
                     break;
           }
      }

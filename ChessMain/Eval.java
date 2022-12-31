@@ -2,6 +2,25 @@ package ChessMain;
 
 public abstract class Eval {
 
+	//Weighting of evaluations
+	//Material = 83%
+	//Pushed Pawns = 1%
+	//Optimal Pieces = 7%
+	//Pawn structure = 1%
+	//Having bishop pair = 1%
+	//Castled = 7%
+	private static double materialWeight = .83;
+
+	private static double pushedPawnsWeight = 0.01;
+
+	private static double optimalPiecesWeight = 0.07;
+
+	private static double pawnStructureWeight = 0.01;
+
+	private static double bishopPairWeight = 0.01;
+
+	private static double castleWeight = 0.07;
+
 	private static int[][] pawnEvalsBlack = {
 			{0,  0,  0,  0,  0,  0,  0,  0},
 			{0,  0,  0, -5, -5,  0,  0,  0},
@@ -65,16 +84,9 @@ public abstract class Eval {
 
 		//avoid repeating moves
 
-		//Weighting of evaluations
-		//Material = 87%
-		//Pushed Pawns = 1%
-		//Optimal Pieces = 3%
-		//Pawn structure = 1%
-		//Having bishop pair = 1%
-		//Castled = 7%
-		return (materialEval * 0.85) + (optimalPiecesEval * .06) +
-				(pushedPawnsEval * .01) + (pawnStructureEval * .01) +
-				(bishopPairEval * .01) + (castleEval * .06);
+		return (materialEval * materialWeight) + (optimalPiecesEval * optimalPiecesWeight) +
+				(pushedPawnsEval * pushedPawnsWeight) + (pawnStructureEval * pawnStructureWeight) +
+				(bishopPairEval * bishopPairWeight) + (castleEval * castleWeight);
 	}
 	private static int pawnStructureEval(Board board) {
 		int whitePawnsPerColumn;
@@ -213,10 +225,8 @@ public abstract class Eval {
 			}
 		}
 		if (!whiteCastled) ret -= 0.5;
-		if (!blackCastled) ret -= 0.5;
+		if (!blackCastled) ret += 0.5;
 		return ret;
 	}
-
-
 
 }

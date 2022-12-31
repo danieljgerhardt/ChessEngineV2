@@ -93,7 +93,6 @@ public class Move {
      }
 
      public boolean makeMove() {
-
           if (!neutralizeThreats("w") || !neutralizeThreats("b")) {
                return false;
           }
@@ -102,7 +101,6 @@ public class Move {
 
           if (this.startingPiece.getPossibleMoves().contains(this.endingTile)) {
                if (engagingEnPassant) {
-                    this.makeEnPassantCapture();
                }
                if (capableOfCastling) {
                     this.executeCastle();
@@ -115,7 +113,6 @@ public class Move {
                //check for pins
                ArrayList<Tile> postMoveThreats = this.detectKingThreats(this.startingPiece.getColor());
                if (postMoveThreats != null && postMoveThreats.size() > 0) {
-                    //System.out.println("POST MOVE THREAT " + postMoveThreats.get(0).toString());
                     this.undoMove();
                     return false;
                }

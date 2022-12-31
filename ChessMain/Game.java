@@ -37,7 +37,7 @@ public class Game {
 
      //piece one and piece two are two most recent pieces in the DisplayGUI's ArrayList
      public boolean executePlayerMove(Piece pieceOne, Piece pieceTwo) {
-          String currentColor = "";
+          String currentColor;
           if (whiteToMove) {
                this.enPassantInt = WHITE_EN_PASSANT_INT;
                currentColor = "w";
@@ -76,10 +76,9 @@ public class Game {
                     if (move.makeMove()) {
                          this.activeMoveList.add(move);
                          this.whiteToMove = !whiteToMove;
-                         int eqLimit = 0;
-                         //Maybe should add if white to move
                          //Check if the board has already been reached to check for draws
-                         /*for (Board testRep : this.boardList) {
+                         /*int eqLimit = 0;
+                         for (Board testRep : this.boardList) {
                               if (testRep.toString().equals(this.gameBoard.toString()) && eqLimit == 0) {
                                    eqLimit++;
                                    this.repetitionCount++;
